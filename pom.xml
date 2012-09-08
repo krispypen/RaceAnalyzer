@@ -1,0 +1,53 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>be.krispypen</groupId>
+	<artifactId>RaceAnalyzer</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>RaceAnalyzer</name>
+	<description>This tool aims to help you with analyzing your race by adding your gps tracker information to your video's. It's also nice to put these video's on youtube instead of the plain video because you'll see the track, speed, g-force, time laps...</description>
+	<url>http://krispypen.github.com/RaceAnalyzer</url>
+	<licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<repositories>
+		<repository>
+			<id>xuggle repo</id>
+			<url>http://xuggle.googlecode.com/svn/trunk/repo/share/java/</url>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>xuggle</groupId>
+			<artifactId>xuggle-xuggler</artifactId>
+			<version>5.2</version>
+		</dependency>
+	</dependencies>
+	<developers>
+		<developer>
+			<id>kris.pypen@gmail.com</id>
+			<name>Kris Pypen</name>
+			<email>kris.pypen@gmail.com</email>
+			<url>http://www.krispypen.be</url>
+		</developer>
+	</developers>
+	<scm>
+		<connection>scm:git:ssh://git@github.com/krispypen/RaceAnalyzer.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/krispypen/RaceAnalyzer.git</developerConnection>
+		<url>https://github.com/krispypen/RaceAnalyzer</url>
+	</scm>
+</project>
