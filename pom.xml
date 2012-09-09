@@ -19,7 +19,7 @@
 	</properties>
 	<repositories>
 		<repository>
-			<id>xuggle repo</id>
+			<id>xugglerepo</id>
 			<url>http://xuggle.googlecode.com/svn/trunk/repo/share/java/</url>
 		</repository>
 	</repositories>
