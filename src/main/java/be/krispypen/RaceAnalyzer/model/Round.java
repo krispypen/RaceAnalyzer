@@ -6,7 +6,18 @@ import java.util.List;
 
 public class Round {
 
+	private int number;
+	private Track track;
 	private List<Trackpoint> points = new LinkedList<Trackpoint>();
+
+	public Round(int number, Track track) {
+		this.number = number;
+		this.track = track;
+	}
+
+	public Track getTrack() {
+		return this.track;
+	}
 
 	/**
 	 * Return all points for this Round
@@ -67,5 +78,9 @@ public class Round {
 		Date result = new Date();
 		result.setTime(points.get(points.size() - 1).getTime());
 		return result;
+	}
+
+	public int getNumber() {
+		return this.number;
 	}
 }

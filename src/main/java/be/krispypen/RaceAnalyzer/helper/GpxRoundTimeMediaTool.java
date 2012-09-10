@@ -39,6 +39,7 @@ public class GpxRoundTimeMediaTool extends MediaToolAdapter {
 	static final int TRACK_Y_POSITION = 750;
 	static final int TRACK_X_POSITION = 50;
 	private static final SimpleDateFormat DURATION_FORMAT = new SimpleDateFormat("mm:ss.S");
+	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("H:mm");
 
 	public static final int TRACK_SIZE = 300;
 
@@ -46,7 +47,7 @@ public class GpxRoundTimeMediaTool extends MediaToolAdapter {
 		this.videostarttime = videostarttime;
 		this.tracks = tracks;
 		this.rounds = rounds;
-		roundsPolygon = new Polygon();
+		trackPolygon = new Polygon();
 		for (Track track : tracks) {
 			for (Trackpoint tp : track.getPoints()) {
 				if (tp.getLat() < minLat) {
@@ -63,7 +64,8 @@ public class GpxRoundTimeMediaTool extends MediaToolAdapter {
 				}
 			}
 		}
-		if (rounds != null) {
+		if (rounds != null && !rounds.isEmpty()) {
+			roundsPolygon = new Polygon();
 			for (Round round : rounds) {
 				for (Trackpoint tp : round.getPoints()) {
 					double y = TRACK_SIZE - ((tp.getLat() - minLat) / (maxLat - minLat)) * TRACK_SIZE;
@@ -90,12 +92,14 @@ public class GpxRoundTimeMediaTool extends MediaToolAdapter {
 	public void onVideoPicture(IVideoPictureEvent event) {
 		double timestamp = ((double) event.getTimeStamp()) / 1000;
 		Round currentRound = null;
-		for (Round round : rounds) {
-			if (round.getStarttime().getTime() - videostarttime < timestamp && round.getEndtime().getTime() - videostarttime > timestamp) {
-				for (Trackpoint tp : round.getPoints()) {
-					if (tp.getTime() - videostarttime > timestamp) {
-						currentRound = round;
-						break;
+		if (rounds != null) {
+			for (Round round : rounds) {
+				if (round.getStarttime().getTime() - videostarttime < timestamp && round.getEndtime().getTime() - videostarttime > timestamp) {
+					for (Trackpoint tp : round.getPoints()) {
+						if (tp.getTime() - videostarttime > timestamp) {
+							currentRound = round;
+							break;
+						}
 					}
 				}
 			}
@@ -118,30 +122,71 @@ public class GpxRoundTimeMediaTool extends MediaToolAdapter {
 			// get the graphics for the image
 			Graphics2D g = image.createGraphics();
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			renderBackground(g);
 			renderTrack(g, trackPoint);
+			renderLapInfo(g, currentRound, trackPoint);
 			if (trackPointSecAgo != null) {
 				renderGForce(g, trackPointSecAgo, trackPoint);
-			}
-			renderSpeed(g, trackPoint.getSpeed());
-			if (currentRound != null) {
-				renderRoundTime(g, currentRound, trackPoint);
 			}
 		}
 
 		super.onVideoPicture(event);
 	}
 
-	private void renderSpeed(Graphics2D g, double speed) {
+	private void renderBackground(Graphics2D g) {
+		g.setColor(new Color(0f, 0f, 0f, .3f));
+		g.fillRect(TRACK_X_POSITION - 10, TRACK_Y_POSITION - 10, 920, 330);
+	}
+
+	private void renderLapInfo(Graphics2D g, Round currentRound, Trackpoint trackPoint) {
 		g.setColor(Color.WHITE);
-		Font font = new Font("Serif", Font.PLAIN, 96);
-		g.setFont(font);
-		int speedround = (int) (speed);
-		g.drawString(speedround + "km/h", SPEED_X_POSITION, SPEED_Y_POSITION);
+		g.setFont(new Font("Serif", Font.PLAIN, 30));
+		{ // speed
+			int speedround = (int) (trackPoint.getSpeed());
+			g.drawString("SPEED", 650, 780);
+			String speed = String.valueOf(speedround);
+			g.drawString(speed, 920 - g.getFontMetrics().stringWidth(speed), 780);
+		}
+		{ // lap
+			g.drawString("LAP", 650, 820);
+			String lap, time;
+			if (currentRound != null) {
+				lap = currentRound.getNumber() + "/" + currentRound.getTrack().getRounds().size();
+				Date timestamp = new Date();
+				timestamp.setTime(trackPoint.getTime() - currentRound.getStarttime().getTime());
+				time = DURATION_FORMAT.format(timestamp);
+			} else {
+				lap = "-";
+				time = "--:--:-";
+			}
+			g.drawString(lap, 920 - g.getFontMetrics().stringWidth(lap), 820);
+			g.drawString(time, 920 - g.getFontMetrics().stringWidth(time), 860);
+		}
+		{ // fastest lap
+			g.drawString("FASTEST", 650, 910);
+			Round fastestRound = trackPoint.getTrack().getFastestRound();
+			String lap = String.valueOf(fastestRound.getNumber());
+			g.drawString(lap, 920 - g.getFontMetrics().stringWidth(lap), 910);
+			Date timestamp = new Date();
+			timestamp.setTime(fastestRound.getDuration());
+			String time = DURATION_FORMAT.format(timestamp);
+			g.drawString(time, 920 - g.getFontMetrics().stringWidth(time), 960);
+		}
+		{ // diff lap
+			g.drawString("DIFF", 650, 1010);
+			String diff = "-"; // TODO
+			g.drawString(diff, 920 - g.getFontMetrics().stringWidth(diff), 1010);
+		}
+		{ // hour
+			g.drawString("TIME", 650, 1060);
+			Date date = new Date();
+			date.setTime(trackPoint.getTime());
+			String diff = TIME_FORMAT.format(date);
+			g.drawString(diff, 920 - g.getFontMetrics().stringWidth(diff), 1060);
+		}
 	}
 
 	private void renderTrack(Graphics2D g, Trackpoint trackPoint) {
-		g.setColor(new Color(0f, 0f, 0f, .3f));
-		g.fillRect(TRACK_X_POSITION - 10, TRACK_Y_POSITION - 10, TRACK_SIZE + 20, TRACK_SIZE + 20);
 		g.setColor(Color.WHITE);
 		g.setStroke(new BasicStroke(3));
 		if (roundsPolygon != null) {
@@ -159,20 +204,20 @@ public class GpxRoundTimeMediaTool extends MediaToolAdapter {
 
 	private void renderGForce(Graphics2D g, Trackpoint trackPointSecAgo, Trackpoint trackPoint) {
 		g.setColor(Color.WHITE);
-		Font font = new Font("Serif", Font.PLAIN, 60);
+		int size = 230;
+		g.drawOval(370, 800, size, size);
+		g.drawOval(370 + size / 4, 800 + size / 4, size / 2, size / 2);
+		g.drawLine(370 + size / 2, 800, 370 + size / 2, 800 + size);
+		g.drawLine(370, 800 + size / 2, 370 + size, 800 + size / 2);
+		Font font = new Font("Serif", Font.PLAIN, 20);
 		g.setFont(font);
-		double gforce = Math.abs(trackPointSecAgo.getSpeed() - trackPoint.getSpeed()) * 1000 / 3600 / 9.8;
-		gforce = ((double) (int) (gforce * 100)) / 100;
-		g.drawString(gforce + "G", GFORCE_X_POSITION, GFORCE_Y_POSITION);
-	}
-
-	private void renderRoundTime(Graphics2D g, Round round, Trackpoint trackPoint) {
-		g.setColor(Color.WHITE);
-		Font font = new Font("Serif", Font.PLAIN, 30);
-		g.setFont(font);
-		Date timestamp = new Date();
-		timestamp.setTime(trackPoint.getTime() - round.getStarttime().getTime());
-		g.drawString(DURATION_FORMAT.format(timestamp), ROUNDTIME_X_POSITION, ROUNDTIME_Y_POSITION);
+		double gforce = (trackPoint.getSpeed() - trackPointSecAgo.getSpeed()) * 1000 / 3600 / 9.8;
+		String gforcestr = (((double) (int) (gforce * 100)) / 100) + "G";
+		g.drawString(gforcestr, 590 - g.getFontMetrics().stringWidth(gforcestr), 1050);
+		int x = 370 + size / 2;
+		int y = (int) (800 + size / 2 + (gforce * size / 2));
+		g.setColor(Color.RED);
+		g.fillOval((int) x - 5, (int) y - 5, 10, 10);
 	}
 
 }

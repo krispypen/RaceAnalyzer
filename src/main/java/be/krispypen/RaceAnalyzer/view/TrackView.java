@@ -122,6 +122,7 @@ public class TrackView extends JPanel {
 		if (this.finishline != null) {
 			List<Round> rounds = new LinkedList<Round>();
 			for (Track track : this.tracks) {
+				track.clearRounds();
 				Round round = null;
 				Trackpoint previousPoint = null;
 				for (Trackpoint point : track.getPoints()) {
@@ -138,8 +139,9 @@ public class TrackView extends JPanel {
 						if (round == null || round.getPoints().size() > 10) {
 							if (round != null) {
 								rounds.add(round);
+								track.addRound(round);
 							}
-							round = new Round();
+							round = new Round(rounds.size() + 1, track);
 						}
 					}
 					previousPoint = point;

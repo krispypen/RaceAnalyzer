@@ -10,6 +10,7 @@ public class Track {
 
 	private String name;
 	private List<Trackpoint> points = new LinkedList<Trackpoint>();
+	private List<Round> rounds = new LinkedList<Round>();
 
 	/**
 	 * Create a track for a given name
@@ -36,6 +37,28 @@ public class Track {
 	@Override
 	public String toString() {
 		return this.name + " [" + this.points.size() + "]";
+	}
+
+	public void addRound(Round round) {
+		this.rounds.add(round);
+	}
+
+	public List<Round> getRounds() {
+		return this.rounds;
+	}
+
+	public Round getFastestRound() {
+		Round result = null;
+		for (Round round : rounds) {
+			if (result == null || result.getDuration() > round.getDuration()) {
+				result = round;
+			}
+		}
+		return result;
+	}
+
+	public void clearRounds() {
+		this.rounds.clear();
 	}
 
 }

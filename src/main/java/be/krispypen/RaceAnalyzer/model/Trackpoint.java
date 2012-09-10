@@ -5,15 +5,21 @@ package be.krispypen.RaceAnalyzer.model;
  */
 public class Trackpoint extends Point {
 
+	private Track track;
 	private double ele;
 	private long time;
 	private double speed;
 
-	public Trackpoint(double lat, double lon, double ele, long time, double speed) {
+	public Trackpoint(Track track, double lat, double lon, double ele, long time, double speed) {
 		super(lat, lon);
+		this.track = track;
 		this.ele = ele;
 		this.time = time;
 		this.speed = speed;
+	}
+
+	public Track getTrack() {
+		return this.track;
 	}
 
 	public double getEle() {

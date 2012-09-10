@@ -105,7 +105,7 @@ public class GpxReader extends DefaultHandler {
 				tracks.add(track);
 				tracksByName.put(name, track);
 			}
-			track.addPoint(new Trackpoint(lat, lon, ele, time + msec, speed));
+			track.addPoint(new Trackpoint(track, lat, lon, ele, time + msec, speed));
 		} else if (qName.equals("ele")) {
 			ele = Double.parseDouble(buf.toString());
 		} else if (qName.equals("time")) {
