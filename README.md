@@ -12,7 +12,9 @@ Webstart to be added
 ![alt text](https://raw.github.com/krispypen/RaceAnalyzer/master/docs/screenshots/building.png "Building example")
 
 ##### Output
-![alt text](https://raw.github.com/krispypen/RaceAnalyzer/master/docs/screenshots/output.png "Output example")
+![outputfinishline](https://raw.github.com/krispypen/RaceAnalyzer/master/docs/screenshots/output.png "Output example on finish line")
+
+![output](https://raw.github.com/krispypen/RaceAnalyzer/master/docs/screenshots/output2.png "Output example")
 
 ## Authors
 
