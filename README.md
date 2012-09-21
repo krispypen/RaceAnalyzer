@@ -18,4 +18,4 @@ Webstart to be added
 
 ## Authors
 
-Kris Pypen (@krispypen)
+Kris Pypen (github: [@krispypen](https://github.com/krispypen), twitter: [@krispypen](https://twitter.com/krispypen))
