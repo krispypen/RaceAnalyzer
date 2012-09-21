@@ -9,13 +9,16 @@ public class Trackpoint extends Point {
 	private double ele;
 	private long time;
 	private double speed;
+	private Round round;
+	private Trackpoint previouspoint;
 
-	public Trackpoint(Track track, double lat, double lon, double ele, long time, double speed) {
+	public Trackpoint(Track track, double lat, double lon, double ele, long time, double speed, Trackpoint previouspoint) {
 		super(lat, lon);
 		this.track = track;
 		this.ele = ele;
 		this.time = time;
 		this.speed = speed;
+		this.previouspoint = previouspoint;
 	}
 
 	public Track getTrack() {
@@ -44,6 +47,18 @@ public class Trackpoint extends Point {
 
 	public void setSpeed(double speed) {
 		this.speed = speed;
+	}
+
+	public void setRound(Round round) {
+		this.round = round;
+	}
+
+	public Round getRound() {
+		return this.round;
+	}
+
+	public Trackpoint getPrevious() {
+		return this.previouspoint;
 	}
 
 }

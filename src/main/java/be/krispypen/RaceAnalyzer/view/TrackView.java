@@ -41,7 +41,7 @@ public class TrackView extends JPanel {
 	private static final int TRACK_X_POSITION = 0;
 	private static final int TRACK_SIZE = 300;
 	private static final SimpleDateFormat TIME_FORMAT = buildTimeFormat();
-	private static final SimpleDateFormat DURATION_FORMAT = new SimpleDateFormat("mm:ss.S");
+	private static final SimpleDateFormat DURATION_FORMAT = new SimpleDateFormat("mm:ss.SSS");
 
 	private static SimpleDateFormat buildTimeFormat() {
 		SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
@@ -130,6 +130,7 @@ public class TrackView extends JPanel {
 					// and starting round
 					if (round != null) {
 						round.addPoint(point);
+						point.setRound(round);
 					}
 					// check when going over finish and (current round has more
 					// then 10 points or does not exist) -> start new round
@@ -154,7 +155,10 @@ public class TrackView extends JPanel {
 			for (Round r : rounds) {
 				Date duration = new Date();
 				duration.setTime(r.getDuration());
-				roundsstr += i++ + " time: " + TIME_FORMAT.format(r.getStarttime()) + " duration: " + DURATION_FORMAT.format(duration) + "<br />";
+				String durationstr = DURATION_FORMAT.format(duration);
+				// skip millisecond precision
+				durationstr = durationstr.substring(0, durationstr.length() - 2);
+				roundsstr += i++ + " time: " + TIME_FORMAT.format(r.getStarttime()) + " duration: " + durationstr + "<br />";
 			}
 			roundsstr += "</html>";
 			this.roundslabel.setText(roundsstr);

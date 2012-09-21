@@ -48,6 +48,7 @@ public class GpxReader extends DefaultHandler {
 	private int msec;
 	private long time;
 	private String name = "noname";
+	private Trackpoint currentTrackpoint;
 
 	public static List<Track> readTrack(InputStream in) throws IOException {
 		try {
@@ -105,7 +106,8 @@ public class GpxReader extends DefaultHandler {
 				tracks.add(track);
 				tracksByName.put(name, track);
 			}
-			track.addPoint(new Trackpoint(track, lat, lon, ele, time + msec, speed));
+			this.currentTrackpoint = new Trackpoint(track, lat, lon, ele, time + msec, speed, this.currentTrackpoint);
+			track.addPoint(this.currentTrackpoint);
 		} else if (qName.equals("ele")) {
 			ele = Double.parseDouble(buf.toString());
 		} else if (qName.equals("time")) {

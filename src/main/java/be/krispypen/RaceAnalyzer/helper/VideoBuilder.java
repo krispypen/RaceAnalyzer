@@ -21,12 +21,15 @@ import com.xuggle.mediatool.event.IVideoPictureEvent;
 
 public class VideoBuilder {
 
-	private static final String outputFilename = "file:///tmp/filmoutput.mp4";
+	private static final String outputFolder = "file:///tmp/";
 	public static final DateFormat ESTIMATE_TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
 	private File inputVideo = null;
 	private long inputVideoDuration = 0;
 	private Date inputVideoStartdate = null;
 	private boolean isbuilding = false;
+
+	public VideoBuilder() {
+	}
 
 	public void setInputVideo(File inputVideo) {
 		this.inputVideo = inputVideo;
@@ -59,7 +62,7 @@ public class VideoBuilder {
 		// configure it to generate BufferImages
 		mediaReader.setBufferedImageTypeToGenerate(BufferedImage.TYPE_3BYTE_BGR);
 
-		IMediaWriter mediaWriter = ToolFactory.makeWriter(outputFilename, mediaReader);
+		IMediaWriter mediaWriter = ToolFactory.makeWriter(outputFolder + inputVideo.getName(), mediaReader);
 
 		IMediaTool gpxMediaTool = new GpxRoundTimeMediaTool(trackViewer.getTracks(), trackViewer.getRounds(), videoBuilder.getInputVideoStartdate().getTime()
 				+ Integer.valueOf(timecorrectionfield.getText()));
@@ -69,9 +72,11 @@ public class VideoBuilder {
 				int procent = (int) (event.getTimeStamp() * 100 / videoBuilder.getInputVideoDuration());
 				buildprogressbar.setValue(procent);
 				if (event.getTimeStamp() != 0) {
+					Date totaltime = new Date();
 					Date estimatetime = new Date();
-					estimatetime.setTime((new Date().getTime() - buildstartdate.getTime()) * videoBuilder.getInputVideoDuration() / event.getTimeStamp());
-					buildprogressbar.setString(procent + " % (" + ESTIMATE_TIME_FORMAT.format(estimatetime) + ")");
+					totaltime.setTime((new Date().getTime() - buildstartdate.getTime()) * videoBuilder.getInputVideoDuration() / event.getTimeStamp());
+					estimatetime.setTime(totaltime.getTime() - (new Date().getTime() - buildstartdate.getTime()));
+					buildprogressbar.setString(procent + " % (est: " + ESTIMATE_TIME_FORMAT.format(estimatetime) + ", total: " + ESTIMATE_TIME_FORMAT.format(totaltime) + ")");
 				} else {
 					buildprogressbar.setString(procent + " %");
 				}
